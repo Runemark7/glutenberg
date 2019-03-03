@@ -14,13 +14,21 @@ router.post('/', async (req, res) => {
     const posts = await loadPostsCollection();
     await posts.insertOne({
         id: req.body.id,
-        image: req.body.image,
-        price: req.body.price,
-        description: req.body.desc,
-        attribute: req.body.attribute,
-        text: req.body.text,
-        createdAt: new Date(),
-        latestChangeAt: new Date()
+        createdAt: Date.now(),
+        namn: req.body.name, 
+        price:req.body.price,
+        visibility: req.body.visibility,
+        sku:req.body.sku,
+        imageUrl:req.body.imageUrl,
+        category:req.body.category,
+        productType:req.body.productType,
+        attribut:req.body.attribut,
+        tags:req.body.tags,
+        stockBalance:req.body.stockBalance,
+        weight:req.body.weight,
+        dimensions:req.body.dimensions,
+        shippingClass:req.body.shippingClass,
+        description:req.body.description
     });
     res.status(201).send();
   });
@@ -33,8 +41,8 @@ router.delete('/:id', async (req,res) =>{
 });
  
 async function loadPostsCollection(){
-    const client = await mongodb.MongoClient.connect('mongodb+srv://jensa123:olajens123@vueexpress-l2rzl.mongodb.net/test?retryWrites=true', { useNewUrlParser: true});
-    return client.db('ecommerce').collection('products');
+    const client = await mongodb.MongoClient.connect('mongodb://46.101.108.97:27017/Dentadeal', { useNewUrlParser: true});
+    return client.db('Dentadeal').collection('products');
 }
 
 module.exports = router;
