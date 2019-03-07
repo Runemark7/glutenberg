@@ -41,8 +41,8 @@ router.delete('/:id', async (req,res) =>{
 });
  
 async function loadPostsCollection(){
-    const client = await mongodb.MongoClient.connect('mongodb://46.101.108.97:27017/Dentadeal', { useNewUrlParser: true});
-    return client.db('Dentadeal').collection('products');
+    const client = await mongodb.MongoClient.connect('mongodb+srv://jensa123:olajens123@vueexpress-l2rzl.mongodb.net/admin', { useNewUrlParser: true});
+    return client.db('ecommerce').collection('products');
 }
 
 module.exports = router;
