@@ -94,7 +94,7 @@ class Editor extends React.Component {
           }
 
           <button type="button" className="components-button is-tertiary"
-            onClick={ this.resetLocalStorage }>Clear LS</button>
+            onClick={ this.resetLocalStorage }>Clear localStorage</button>
             <button type="button" className="components-button is-tertiary"
             onClick={ () => getDataFromDb() }>Hämta data från Agera</button>
             <button type="button" className="components-button is-tertiary"
@@ -108,13 +108,14 @@ class Editor extends React.Component {
       const data = await axios.get('http://localhost:5000/api/products');
       const last = data.data.pop();
 
-      localStorage.setItem('g-editor-page', JSON.stringify(last.content.content));
+      localStorage.setItem('g-editor-page', JSON.stringify(last.content));
       window.location.reload();
       console.log('datan är hämtad och satt till aktuell version');
         
     }
     async function sendDataToDb(){
-      const localSave = localStorage.getItem('g-editor-page');
+      const localSave = JSON.parse(localStorage.getItem('g-editor-page'));
+      console.log(localSave);
 
       axios.post('http://localhost:5000/api/products', localSave);
       console.log("Sparat!");
