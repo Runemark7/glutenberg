@@ -7,6 +7,7 @@ import { getPage } from '../globals/api-fetch';
 import '@frontkom/gutenberg-js/build/css/block-library/style.css';
 import '@frontkom/gutenberg-js/build/css/style.css';
 import './editor.css';
+import axios from 'axios';
 
 class Editor extends React.Component {
   constructor (props) {
@@ -93,12 +94,34 @@ class Editor extends React.Component {
           }
 
           <button type="button" className="components-button is-tertiary"
-            onClick={ this.resetLocalStorage }>Clear page and reload</button>
+            onClick={ this.resetLocalStorage }>Clear LS</button>
+            <button type="button" className="components-button is-tertiary"
+            onClick={ () => getDataFromDb() }>Hämta data från Agera</button>
+            <button type="button" className="components-button is-tertiary"
+            onClick={ () => sendDataToDb() }>Spara till molnet</button>
         </div>
         <div id="editor" className="gutenberg__editor"></div>
       </React.Fragment>
     );
+    async function getDataFromDb(){
+      console.log();
+      const data = await axios.get('http://localhost:5000/api/products');
+      const last = data.data.pop();
+
+      localStorage.setItem('g-editor-page', JSON.stringify(last.content.content));
+      window.location.reload();
+      console.log('datan är hämtad och satt till aktuell version');
+        
+    }
+    async function sendDataToDb(){
+      const localSave = localStorage.getItem('g-editor-page');
+
+      axios.post('http://localhost:5000/api/products', localSave);
+      console.log("Sparat!");
+    }
   }
+
 }
+
 
 export default Editor;
