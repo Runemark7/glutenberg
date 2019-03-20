@@ -2,6 +2,7 @@ import React from 'react';
 import { data, editPost, domReady } from '@frontkom/gutenberg-js';
 import { types } from '../globals/fake-data';
 import { getPage } from '../globals/api-fetch';
+import '../Blocks/test';
 
 // Gutenberg JS Style
 import '@frontkom/gutenberg-js/build/css/block-library/style.css';
