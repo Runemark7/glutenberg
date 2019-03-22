@@ -9,8 +9,10 @@ app.use(cors());
 app.use(bodyParser.json());
 
 const products = require('./routes/api/productApi');
+const media = require('./routes/api/media');
 
 app.use('/api/products', products);
+app.use('/wp/v2/media', media);
 
 
 
