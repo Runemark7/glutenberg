@@ -1,8 +1,12 @@
 import React from 'react';
-import { data, editPost, domReady } from '@frontkom/gutenberg-js';
+import { data, editPost, domReady, blocks } from '@frontkom/gutenberg-js';
 import { types } from '../globals/fake-data';
 import { getPage } from '../globals/api-fetch';
 import '../Blocks/test';
+// DETTA ÄR BYTAT
+//import domReady from '@wordpress/dom-ready';
+
+
 
 // Gutenberg JS Style
 import '@frontkom/gutenberg-js/build/css/block-library/style.css';
@@ -52,7 +56,12 @@ class Editor extends React.Component {
       domReady(function () {
         resolve(editPost.initializeEditor('editor', postType, 1, settings, {}));
       });
-    });
+    }).then(function(){
+        
+        blocks.unregisterBlockType('core/paragraph');
+        blocks.unregisterBlockType('core/image');
+
+      });
   }
 
   resetLocalStorage = ev => {

@@ -4,11 +4,11 @@ import { pages, types, themes, taxonomies, categories, users } from './fake-data
 import { mediaList, createMedia } from './fake-media.js';
 
 
-export function getPage (type = 'page') {
+export function getPage (type = 'customPage') {
   return JSON.parse(localStorage.getItem('g-editor-page')) || pages[type];
 }
 
-function savePage (data, type = 'page') {
+function savePage (data, type = 'customPage') {
   const item = {
     ...getPage(type),
     ...data,
@@ -123,12 +123,16 @@ const apiFetch = async options => {
   else if(route('/wp/v2/users', _path)) {
     res = users;
   }
+    // XDDD
+    else if(route('/wp/v2/customPage', _path)) {
+      res = getPage('cumstomPage');
+    }
 
   else {
     console.warn('Unmatched route:', method || 'GET', path, data);
   }
 
-  // console.log(res);
+  //console.log(res);
   return res;
 };
 

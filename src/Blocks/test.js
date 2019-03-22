@@ -10,9 +10,9 @@ const myFirstBlock = {
     icon: 'universal-access-alt',
     category: 'cloudblocks',
 
-    eattributes: {
+    attributes: {
         content: {
-            type: 'string',
+            type: 'array',
             source: 'html',
             selector: 'p',
         },
@@ -27,7 +27,8 @@ const myFirstBlock = {
 
         return (
             <RichText
-                tagName="p"
+                tagName="ul"
+                multiline="li"
                 className={ className }
                 onChange={ onChangeContent }
                 value={ content }
@@ -40,7 +41,8 @@ const myFirstBlock = {
 
         return (
             <RichText.Content
-                tagName="p"
+                tagName="ul"
+                multiline="li"
                 value={ content }
             />
         );
@@ -59,3 +61,4 @@ dispatch('core/blocks').setCategories([ category, ...currentCategories ]);
 
 // Registering the new block
 registerBlockType(`${category.slug}/my-first-block`, myFirstBlock);
+

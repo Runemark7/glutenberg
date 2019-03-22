@@ -41,6 +41,26 @@ export const types = {
     taxonomies:[ ],
     viewable: true,
   },
+  customPage: {
+    id: 3,
+    name: 'custom page',
+    rest_base: 'pages',
+    slug: 'xd',
+    supports:{
+      author: false,
+      comments: true,
+      'custom-fields': true,
+      discussion: false,
+      editor: true,
+      excerpt: false,
+      'page-attributes': false,
+      revisions: false,
+      thumbnail: false,
+      title: false,
+    },
+    taxonomies:[ ],
+    viewable: true,
+  }
 };
 
 export const pages = {
@@ -106,6 +126,37 @@ export const pages = {
       'wp:action-create-categories': [],
     },
   },
+  customPage: {
+    id: 2,
+    content: {
+      raw: '',
+      rendered: '',
+    },
+    date,
+    date_gmt: date,
+    title: {
+      raw: 'Preview page XDD',
+      rendered: 'Preview page XDD',
+    },
+    excerpt: {
+      raw: '',
+      rendered: '',
+    },
+    status: 'draft',
+    revisions: { count: 0, last_id: 0 },
+    parent: 0,
+    theme_style: true,
+    type: 'page',
+    link: `${window.location.origin}/preview`,
+    categories: [ ],
+    featured_media: 0,
+    permalink_template: `${window.location.origin}/preview`,
+    preview_link: `${window.location.origin}/preview`,
+    _links: {
+      'wp:action-assign-categories': [],
+      'wp:action-create-categories': [],
+    },
+  }
 };
 
 
