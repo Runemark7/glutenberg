@@ -1,10 +1,11 @@
 import React from 'react';
-import { data, editPost, domReady, blocks } from '@frontkom/gutenberg-js';
+import { data, editPost, domReady } from '@frontkom/gutenberg-js';
 import { types } from '../globals/fake-data';
 import { getPage } from '../globals/api-fetch';
-import '../Blocks/test';
-// DETTA ÄR BYTAT
-//import domReady from '@wordpress/dom-ready';
+//Hämtar alla custom blocks
+import * as customBlocks from '../Blocks/index';
+//Ett npm-paket som gör det möjligt att göra http-anrop.
+import axios from 'axios';
 
 
 
@@ -12,7 +13,7 @@ import '../Blocks/test';
 import '@frontkom/gutenberg-js/build/css/block-library/style.css';
 import '@frontkom/gutenberg-js/build/css/style.css';
 import './editor.css';
-import axios from 'axios';
+
 
 class Editor extends React.Component {
   constructor (props) {
@@ -57,9 +58,8 @@ class Editor extends React.Component {
         resolve(editPost.initializeEditor('editor', postType, 1, settings, {}));
       });
     }).then(function(){
-        
-        blocks.unregisterBlockType('core/paragraph');
-        blocks.unregisterBlockType('core/image');
+      //Funktionen körs i index.js i Blocks-katalogen.
+        customBlocks.unRegister();
 
       });
   }
@@ -106,6 +106,7 @@ class Editor extends React.Component {
           <button type="button" className="components-button is-tertiary"
             onClick={ this.resetLocalStorage }>Clear localStorage</button>
             <button type="button" className="components-button is-tertiary"
+            // EGET MECKANDE STARTAR HÄR
             onClick={ () => getDataFromDb() }>Hämta data från Agera</button>
             <button type="button" className="components-button is-tertiary"
             onClick={ () => sendDataToDb() }>Spara till molnet</button>
@@ -113,6 +114,7 @@ class Editor extends React.Component {
         <div id="editor" className="gutenberg__editor"></div>
       </React.Fragment>
     );
+    
     async function getDataFromDb(){
       console.log();
       const data = await axios.get('http://localhost:5000/api/products');
@@ -130,6 +132,7 @@ class Editor extends React.Component {
       axios.post('http://localhost:5000/api/products', localSave);
       console.log("Sparat!");
     }
+    // EGET MECKANDE SLUTAR HÄR
   }
 
 }

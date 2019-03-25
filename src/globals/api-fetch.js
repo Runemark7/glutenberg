@@ -1,7 +1,7 @@
 /* eslint no-cond-assign: off */
 
 import { pages, types, themes, taxonomies, categories, users } from './fake-data.js';
-import { mediaList, createMedia } from './fake-media.js';
+import { mediaList, createMedia, dataFromDb } from './fake-media.js';
 
 
 export function getPage (type = 'customPage') {
@@ -79,7 +79,8 @@ const apiFetch = async options => {
   }
 
   // Media
-  else if(route('/wp/v2/media', _path)) {
+  else if(route('/wp/v2/media', _path)) {    
+    await dataFromDb(); //Kallar på media från databasen
     if(method === 'OPTIONS') {
       res = {
         headers: {
