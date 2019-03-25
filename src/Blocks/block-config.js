@@ -8,5 +8,5 @@ export * from './test2';
 // Här avregisteras default-blocks, funktionen körs precis efter att sidan laddats in (editor.js rad: 61)
 export function unRegister () {
     blocks.unregisterBlockType('core/paragraph');
-    blocks.unregisterBlockType('core/image');
+    //blocks.unregisterBlockType('core/image');
 }

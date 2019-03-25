@@ -3,7 +3,7 @@ import { data, editPost, domReady } from '@frontkom/gutenberg-js';
 import { types } from '../globals/fake-data';
 import { getPage } from '../globals/api-fetch';
 //Hämtar alla custom blocks
-import * as customBlocks from '../Blocks/index';
+import * as customBlocks from '../Blocks/block-config';
 //Ett npm-paket som gör det möjligt att göra http-anrop.
 import axios from 'axios';
 
