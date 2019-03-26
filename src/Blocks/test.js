@@ -6,17 +6,17 @@ const { RichText } = editor;
 
 // Setting block's properties
 const myFirstBlock = {
-    title: 'My first block!',
-    icon: 'universal-access-alt',
-    category: 'cloudblocks',
+  title: 'My first block!',
+  icon: 'universal-access-alt',
+  category: 'cloudblocks',
 
-    attributes: {
-        content: {
-            type: 'array',
-            source: 'html',
-            selector: 'p',
-        },
-    },
+  attributes: {
+      content: {
+          type: 'array',
+          source: 'html',
+          selector: 'p',
+      },
+  },
 
     edit( { attributes, className, setAttributes } ) {
         const { content } = attributes;

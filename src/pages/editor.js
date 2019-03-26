@@ -3,17 +3,15 @@ import { data, editPost, domReady } from '@frontkom/gutenberg-js';
 import { types } from '../globals/fake-data';
 import { getPage } from '../globals/api-fetch';
 //Hämtar alla custom blocks
-import * as customBlocks from '../Blocks/block-config';
+//import * as customBlocks from '../Blocks/block-config';
 //Ett npm-paket som gör det möjligt att göra http-anrop.
 import axios from 'axios';
-
-
 
 // Gutenberg JS Style
 import '@frontkom/gutenberg-js/build/css/block-library/style.css';
 import '@frontkom/gutenberg-js/build/css/style.css';
 import './editor.css';
-
+import './../Blocks/test';
 
 class Editor extends React.Component {
   constructor (props) {
@@ -57,10 +55,9 @@ class Editor extends React.Component {
       domReady(function () {
         resolve(editPost.initializeEditor('editor', postType, 1, settings, {}));
       });
-    }).then(function(){
+    }).then(async function(){
       //Funktionen körs i index.js i Blocks-katalogen.
-        customBlocks.unRegister();
-
+      //  await customBlocks.unRegister();
       });
   }
 

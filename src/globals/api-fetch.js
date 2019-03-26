@@ -3,7 +3,6 @@
 import { pages, types, themes, taxonomies, categories, users } from './fake-data.js';
 import { mediaList, createMedia, dataFromDb } from './fake-media.js';
 
-
 export function getPage (type = 'customPage') {
   return JSON.parse(localStorage.getItem('g-editor-page')) || pages[type];
 }
@@ -125,12 +124,12 @@ const apiFetch = async options => {
     res = users;
   }
     // XDDD
-    else if(route('/wp/v2/customPage', _path)) {
-      res = getPage('cumstomPage');
-    }
-
+  else if(route('/wp/v2/customPage', _path)) {
+    res = getPage('cumstomPage');
+  }
+  
   else {
-    console.warn('Unmatched route:', method || 'GET', path, data);
+    console.log('Unmatched route:', method || 'GET', path, data);
   }
 
   //console.log(res);
