@@ -128,7 +128,7 @@ const apiFetch = async options => {
     res = getPage('cumstomPage');
   }
   
-  else {
+  else{
     console.log('Unmatched route:', method || 'GET', path, data);
   }
 

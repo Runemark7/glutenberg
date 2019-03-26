@@ -5,8 +5,6 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import './globals';
 import Editor from './pages/editor';
 import Preview from './pages/preview';
-import './globals/url';
-
 
 
 ReactDOM.render((
