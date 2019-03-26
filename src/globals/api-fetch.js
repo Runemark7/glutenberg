@@ -2,6 +2,8 @@
 
 import { pages, types, themes, taxonomies, categories, users } from './fake-data.js';
 import { mediaList, createMedia, dataFromDb } from './fake-media.js';
+import axios from 'axios';
+
 
 export function getPage (type = 'customPage') {
   return JSON.parse(localStorage.getItem('g-editor-page')) || pages[type];
@@ -47,6 +49,8 @@ const apiFetch = async options => {
   const { method, path, data } = options;
   const [ _path ] = path.split('?');
 
+  console.log(path);
+
   // Types
   if(route('/wp/v2/types', _path)) {
     res = types;
@@ -78,8 +82,8 @@ const apiFetch = async options => {
   }
 
   // Media
-  else if(route('/wp/v2/media', _path)) {    
-    await dataFromDb(); //Kallar på media från databasen
+  else if(route('/wp/v2/media', _path)) {
+  await dataFromDb();
     if(method === 'OPTIONS') {
       res = {
         headers: {
@@ -123,13 +127,19 @@ const apiFetch = async options => {
   else if(route('/wp/v2/users', _path)) {
     res = users;
   }
-    // XDDD
+  // XDDD
   else if(route('/wp/v2/customPage', _path)) {
     res = getPage('cumstomPage');
   }
-  
-  else{
-    console.log('Unmatched route:', method || 'GET', path, data);
+
+  else if(route('/wp/v2/search/{ value }', _path)){
+    const data = await axios.get(`http://localhost:5000`+ `${path}`);
+    console.log(data);
+    return data;
+  }
+
+  else {
+    console.warn('Unmatched route:', method || 'GET', path, data);
   }
 
   //console.log(res);

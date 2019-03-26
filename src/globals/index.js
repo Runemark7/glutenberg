@@ -4,6 +4,5 @@ import { addQueryArgs } from './url';
 
 window.wp = {
   apiFetch,
-  url : { addQueryArgs } ,
+  url: { addQueryArgs },
 };
-
