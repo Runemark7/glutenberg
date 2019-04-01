@@ -3,114 +3,92 @@
   "version": "1.0.0",
   "description": "",
   "main": "build/index.js",
-  "author": "",
-  "license": "ISC",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "NODE_ENV=production webpack",
+    "dev": "NODE_ENV=development webpack",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "deploy": "npm run lint && npm publish --access public",
+    "start": "node build-scripts/start.js"
+  },
+  "homepage": "https://github.com/front/gutenberg-js#readme",
+  "bugs": {
+    "url": "https://github.com/front/gutenberg-js/issues"
+  },
+  "author": "The Frontkom Contributors",
+  "license": "GPL-2.0-or-later",
+  "keywords": [
+    "CMS",
+    "Drupal",
+    "Editor",
+    "Frontkom",
+    "Gutenberg",
+    "Page builder",
+    "WordPress",
+    "WYSIWYG"
+  ],
   "dependencies": {
-    "@babel/core": "7.2.2",
-    "@frontkom/gutenberg-js": "^4.0.0",
-    "@svgr/webpack": "2.4.1",
-    "babel-core": "7.0.0-bridge.0",
-    "babel-jest": "23.6.0",
-    "babel-loader": "8.0.5",
-    "babel-plugin-named-asset-import": "^0.2.2",
-    "babel-preset-react-app": "^5.0.4",
-    "bfj": "6.1.1",
-    "case-sensitive-paths-webpack-plugin": "2.1.2",
-    "chalk": "2.4.2",
-    "copy-webpack-plugin": "^4.5.1",
-    "css-loader": "1.0.0",
-    "dotenv": "6.2.0",
-    "dotenv-expand": "4.2.0",
-    
-    "file-loader": "2.0.0",
-    "fs-extra": "7.0.1",
-    "html-webpack-plugin": "4.0.0-alpha.2",
-    "identity-obj-proxy": "3.0.0",
-    "jest": "23.6.0",
-    "jest-pnp-resolver": "1.0.2",
-    "jest-resolve": "23.6.0",
-    "mini-css-extract-plugin": "0.4.3",
-    "optimize-css-assets-webpack-plugin": "5.0.1",
-    "pnp-webpack-plugin": "1.2.1",
-    "postcss-flexbugs-fixes": "4.1.0",
-    "postcss-loader": "3.0.0",
-    "postcss-preset-env": "6.5.0",
-    "postcss-safe-parser": "4.0.1",
-    "react-app-polyfill": "^0.1.3",
-    "react-dev-utils": "^6.0.5",
-    "react-router-dom": "^4.3.1",
-    "resolve": "1.9.0",
-    "sass-loader": "7.1.0",
-    "style-loader": "0.23.1",
-    "terser-webpack-plugin": "1.1.0",
-    "url-loader": "1.1.2",
-    "webpack": "4.28.4",
-    "webpack-cli": "^3.1.2",
-    "webpack-dev-server": "3.1.14",
-    "webpack-manifest-plugin": "2.0.4",
-    "workbox-webpack-plugin": "3.6.3"
+    "@wordpress/a11y": "^2.0.2",
+    "@wordpress/api-fetch": "2.2.8",
+    "@wordpress/autop": "^2.0.2",
+    "@wordpress/blob": "^2.1.0",
+    "@wordpress/block-library": "^2.2.13",
+    "@wordpress/block-serialization-default-parser": "^2.0.4",
+    "@wordpress/blocks": "^6.0.5",
+    "@wordpress/components": "^7.0.6",
+    "@wordpress/compose": "^3.0.1",
+    "@wordpress/core-data": "^2.0.17",
+    "@wordpress/data": "^4.2.1",
+    "@wordpress/date": "^3.0.1",
+    "@wordpress/deprecated": "^2.0.5",
+    "@wordpress/dom": "^2.0.8",
+    "@wordpress/dom-ready": "^2.0.2",
+    "@wordpress/edit-post": "3.1.8",
+    "@wordpress/editor": "9.0.8",
+    "@wordpress/element": "^2.1.9",
+    "@wordpress/escape-html": "^1.0.1",
+    "@wordpress/format-library": "^1.2.11",
+    "@wordpress/hooks": "^2.0.5",
+    "@wordpress/html-entities": "^2.0.4",
+    "@wordpress/i18n": "^3.1.1",
+    "@wordpress/is-shallow-equal": "^1.1.5",
+    "@wordpress/keycodes": "^2.0.6",
+    "@wordpress/notices": "1.1.3",
+    "@wordpress/nux": "^3.0.7",
+    "@wordpress/plugins": "^2.0.10",
+    "@wordpress/redux-routine": "^3.0.4",
+    "@wordpress/rich-text": "^3.0.5",
+    "@wordpress/shortcode": "^2.0.2",
+    "@wordpress/token-list": "^1.1.0",
+    "@wordpress/url": "2.3.3",
+    "@wordpress/viewport": "^2.1.1",
+    "@wordpress/wordcount": "^2.0.3",
+    "tinymce": "4.9.2"
   },
   "devDependencies": {
- 
-  },
-  "scripts": {
-    "start": "node scripts/start.js",
-    "build": "node scripts/build.js",
-    "test": "node scripts/test.js",
-
-    "deploy": "npm run lint && npm publish --access public"
+    "@babel/core": "^7.2.2",
+    "@babel/preset-react": "^7.0.0",
+    "@wordpress/eslint-plugin": "^1.0.1",
+    "babel-eslint": "^10.0.1",
+    "babel-loader": "^8.0.5",
+    "clean-webpack-plugin": "^1.0.0",
+    "eslint": "^5.9.0",
+    "eslint-plugin-jest": "^22.1.3",
+    "eslint-plugin-jsx-a11y": "^6.1.0",
+    "eslint-plugin-react": "^7.10.0",
+    "extract-text-webpack-plugin": "4.0.0-beta.0",
+    "node-sass": "^4.11.0",
+    "path-replace-loader": "^2.0.0",
+    "sass-loader": "^7.1.0",
+    "string-replace-webpack-plugin": "^0.1.3",
+    "webpack": "^4.28.4",
+    "webpack-cli": "^3.2.1"
   },
   "browserslist": [
     ">0.2%",
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ],
-  "babel": {
-    "presets": [
-      "react-app"
-    ]
-  },
-  "jest": {
-    "collectCoverageFrom": [
-      "src/**/*.{js,jsx}"
-    ],
-    "resolver": "jest-pnp-resolver",
-    "setupFiles": [
-      "react-app-polyfill/jsdom"
-    ],
-    "testMatch": [
-      "<rootDir>/src/**/__tests__/**/*.{js,jsx}",
-      "<rootDir>/src/**/?(*.)(spec|test).{js,jsx}"
-    ],
-    "testEnvironment": "jsdom",
-    "testURL": "http://localhost",
-    "transform": {
-      "^.+\\.(js|jsx)$": "<rootDir>/node_modules/babel-jest",
-      "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
-      "^(?!.*\\.(js|jsx|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
-    },
-    "transformIgnorePatterns": [
-      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$",
-      "^.+\\.module\\.(css|sass|scss)$"
-    ],
-    "moduleNameMapper": {
-      "^react-native$": "react-native-web",
-      "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy"
-    },
-    "moduleFileExtensions": [
-      "web.js",
-      "js",
-      "json",
-      "web.jsx",
-      "jsx",
-      "node"
-    ],
-    "eslintConfig": {
-      "rules": {
-          "no-var": 0
-      }
-  }
-  }
-  
+  ]
 }

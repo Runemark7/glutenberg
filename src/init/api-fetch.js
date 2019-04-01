@@ -9,3 +9,4 @@ if (window.wp.apiFetch) {
 }
 else {
     window.wp.apiFetch = apiFetch;
+}
