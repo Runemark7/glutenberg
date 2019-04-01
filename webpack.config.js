@@ -20,6 +20,7 @@ const paths = require('./config/paths');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const CopyWebpackPlugin = require( 'copy-webpack-plugin' );
+const PhpOutputPlugin = require('webpack-php-manifest');
 
 // const PostCssWrapper = require('postcss-wrapper-loader');
 // const StringReplacePlugin = require('string-replace-webpack-plugin');
@@ -236,6 +237,9 @@ module.exports = {
         // new PostCssWrapper('./css/block-library/edit-blocks.css', '.gutenberg__editor'),
         // new StringReplacePlugin(),
         new CleanWebpackPlugin(['build']),
+        new PhpOutputPlugin({
+
+        })
     ],
     stats: {
         children: false,
