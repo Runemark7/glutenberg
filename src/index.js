@@ -1,6 +1,8 @@
+
 /**
  * Internal dependencies
  */
+
 import './init';
 /**
  * WordPress dependencies
@@ -153,3 +155,5 @@ export {
     viewport,
     wordcount,
 };
+
+import './main';

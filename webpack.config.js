@@ -3,9 +3,14 @@
  */
 const { resolve } = require('path');
 
+// gutenberg-js
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const extractCSS = new ExtractTextPlugin('./css/style.css');
 const extractBLCSS = new ExtractTextPlugin('./css/block-library/style.css');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+
+
+// g-editor 
 const path = require('path');
 const webpack = require('webpack');
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
@@ -22,10 +27,8 @@ const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const CopyWebpackPlugin = require( 'copy-webpack-plugin' );
 const PhpOutputPlugin = require('webpack-php-manifest');
 
-process.traceDeprecation = true;
 //const PostCssWrapper = require('postcss-wrapper-loader');
 //const StringReplacePlugin = require('string-replace-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 //BLock dir
 const blockDir = process.env.BLOCK_DIR ? process.env.BLOCK_DIR + '/' : '';
@@ -33,7 +36,6 @@ const blockVars = {};
 
 if (blockDir) {
     const fs = require('fs');
-
     if (fs.lstatSync(blockDir).isDirectory()) {
         const script = `${blockDir}build/index.js`;
         const style  = `${blockDir}build/style.css`;
@@ -57,14 +59,10 @@ if (blockDir) {
         }
     }
 }
-
 const publicPath = '/';
-
 const publicUrl = '';
-
 const env = getClientEnvironment(publicUrl);
 
-// style files regexes
 const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css$/;
 const sassRegex = /\.(scss|sass)$/;
@@ -72,170 +70,108 @@ const sassModuleRegex = /\.module\.(scss|sass)$/;
 
 const getStyleLoaders = (cssOptions, preProcessor) => {
     const loaders = [
-        require.resolve('style-loader'),
-        {
-            loader: require.resolve('css-loader'),
-            options: cssOptions,
+      require.resolve('style-loader'),
+      {
+        loader: require.resolve('css-loader'),
+        options: cssOptions,
+      },
+      {
+        // Options for PostCSS as we reference these options twice
+        // Adds vendor prefixing based on your specified browser support in
+        // package.json
+        loader: require.resolve('postcss-loader'),
+        options: {
+          // Necessary for external CSS imports to work
+          // https://github.com/facebook/create-react-app/issues/2677
+          ident: 'postcss',
+          plugins: () => [
+            require('postcss-flexbugs-fixes'),
+            require('postcss-preset-env')({
+              autoprefixer: {
+                flexbox: 'no-2009',
+              },
+              stage: 3,
+            }),
+          ],
         },
-        {
-            // Options for PostCSS as we reference these options twice
-            // Adds vendor prefixing based on your specified browser support in
-            // package.json
-            loader: require.resolve('postcss-loader'),
-            options: {
-                // Necessary for external CSS imports to work
-                // https://github.com/facebook/create-react-app/issues/2677
-                ident: 'postcss',
-                plugins: () => [
-                    require('postcss-flexbugs-fixes'),
-                    require('postcss-preset-env')({
-                        autoprefixer: {
-                            flexbox: 'no-2009',
-                        },
-                        stage: 3,
-                    }),
-                ],
-            },
-        },
+      },
     ];
     if (preProcessor) {
-        loaders.push(require.resolve(preProcessor));
+      loaders.push(require.resolve(preProcessor));
     }
     return loaders;
-};
+  };
 
-/**
- * Given a string, returns a new string with dash separators converedd to
- * camel-case equivalent. This is not as aggressive as `_.camelCase` in
- * converting to uppercase, where Lodash will convert letters following
- * numbers.
- *
- * @param {string} string Input dash-delimited string.
- *
- * @return {string} Camel-cased string.
- */
 function camelCaseDash (string) {
     return string.replace(
-        /-([a-z])/g,
-        (match, letter) => letter.toUpperCase()
+      /-([a-z])/g,
+      (match, letter) => letter.toUpperCase()
     );
 }
 
 const babelLoader = {
     loader: 'babel-loader',
     options: {
-        presets: ['@babel/preset-react'],
+      presets: ['@babel/preset-react'],
     },
 };
-
+  
 const externals = {
     react: 'React',
     'react-dom': 'ReactDOM',
     moment: 'moment',
     jquery: 'jQuery',
 };
-
-const alias = {};
+  
+const alias = {'react-native': 'react-native-web'};
 
 [
     'api-fetch',
     'url',
-].forEach(name => {
+  ].forEach(name => {
     externals[ `@wordpress/${name}` ] = {
-        this: [ 'wp', camelCaseDash(name) ],
+      this: [ 'wp', camelCaseDash(name) ],
     };
-});
+  });
 
 module.exports = {
-    mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
-    devtool: 'source-map',
+    mode: 'development',
+    devtool:  'source-map'/*['source-map', 'chaep-module-source-map']*/,
     entry: './src/index.js',
     output: {
-        pathinfo: true,
-        filename: 'js/gutenberg-js.js',
-        path: resolve(__dirname, 'build'),
-        libraryTarget: 'this',
-        publicPath: publicPath,
-        devtoolModuleFilenameTemplate: info =>
-            path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
+      filename: 'js/gutenberg-js.js',
+      path: resolve(__dirname, 'build'),
+      libraryTarget: 'this',
     },
     externals,
     resolve: {
-        modules: [
-            __dirname,
-            resolve(__dirname, 'node_modules'),
-        ],
-        alias,
+      modules: [
+        __dirname,
+        resolve(__dirname, 'node_modules'),
+      ],
+      alias,
+      extensions: ['.mjs', '.web.js', '.js', '.json', '.web.jsx', '.jsx'],
     },
     module: {
-        rules: [
-            {
-                test: /\.js$/,
-                include: [
-                    /src/,
-                    /node_modules\/@wordpress/,
-                ],
-                use: babelLoader,
-            },
-            {
-                test: /\.js$/,
-                oneOf: [
-                    {
-                        resourceQuery: /\?source=node_modules/,
-                        use: babelLoader,
-                    },
-                    {
-                        loader: 'path-replace-loader',
-                        options: {
-                            path: resolve(__dirname, 'node_modules/@wordpress'),
-                            replacePath: resolve(__dirname, 'src/js/gutenberg-overrides/@wordpress'),
-                        },
-                    },
-                ],
-            },
-            
-            /* {
-              test: /editor\.s?css$/,
-              include: [
-                /block-library/,
-              ],
-              use: mainCSSExtractTextPlugin.extract({
-                use: [
-                  {
-                    // removing .gutenberg class in editor.scss files
-                    loader: StringReplacePlugin.replace({
-                      replacements: [ {
-                        pattern: /.gutenberg /ig,
-                        // replacement: () => (''),
-                        replacement: () => ('.gutenberg__editor'),
-                      } ],
-                    }),
-                  },
-                  ...extractConfig.use,
-                ],
-              }),
-            },*/
-            {
-                test: /style\.s?css$/,
-                use: extractCSS.extract({
-                    fallback: 'style-loader', // creates style nodes from JS strings
-                    use: [
-                        { loader: 'css-loader' },   // translates CSS into CommonJS
-                        { loader: 'sass-loader' },  // compiles Sass to CSS
-                    ],
-                }),
-            },
-            {
-                test: /block-library\.s?css$/,
-                use: extractBLCSS.extract({
-                    fallback: 'style-loader', // creates style nodes from JS strings
-                    use: [
-                        { loader: 'css-loader' },   // translates CSS into CommonJS
-                        { loader: 'sass-loader' },  // compiles Sass to CSS
-                    ],
-                }),
-            },
-            {
+        strictExportPresence: true,
+      rules: [
+        { parser: { requireEnsure: false } },
+        {
+          test: /\.js$/,
+          include: [
+            /src/,
+            /node_modules\/@wordpress/,
+          ],
+          use: babelLoader,
+        },    {
+            // "oneOf" will traverse all following loaders until one will
+            // match the requirements. When no loader matches it will fall
+            // back to the "file" loader at the end of the loader list.
+            oneOf: [
+              // "url" loader works like "file" loader except that it embeds assets
+              // smaller than specified limit in bytes as data URLs to avoid requests.
+              // A missing `test` is equivalent to a match.
+              {
                 test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
                 loader: require.resolve('url-loader'),
                 options: {
@@ -363,32 +299,114 @@ module.exports = {
                   name: 'static/media/[name].[hash:8].[ext]',
                 },
               },
-            
-        ],
+            ],
+          },
+        {
+          test: /\.js$/,
+          oneOf: [
+            {
+              resourceQuery: /\?source=node_modules/,
+              use: babelLoader,
+            },
+            {
+              loader: 'path-replace-loader',
+              options: {
+                path: resolve(__dirname, 'node_modules/@wordpress'),
+                replacePath: resolve(__dirname, 'src/gutenberg-overrides/@wordpress'),
+              },
+            },
+          ],
+        },
+        {
+          test: /style\.s?css$/,
+          use: extractCSS.extract({
+            fallback: 'style-loader', // creates style nodes from JS strings
+            use: [
+              { loader: 'css-loader' },   // translates CSS into CommonJS
+              { loader: 'sass-loader' },  // compiles Sass to CSS
+            ],
+          }),
+        },
+        {
+          test: /block-library\.s?css$/,
+          use: extractBLCSS.extract({
+            fallback: 'style-loader', // creates style nodes from JS strings
+            use: [
+              { loader: 'css-loader' },   // translates CSS into CommonJS
+              { loader: 'sass-loader' },  // compiles Sass to CSS
+            ],
+          }),
+        },
+      ],
     },
     plugins: [
-        extractCSS,
-        extractBLCSS,
-        // wrapping editor style with .gutenberg__editor class
-        new HtmlWebpackPlugin({
-            inject:true,
-            filename:'index.php',
-            template: paths.appHtml,
-            chunks:{
-                head:{
-                    css:['./css/block-library/edit-blocks.css', '.gutenberg__editor'] 
-                },
-                main:{}
-            },
-            ...blockVars,
-        }),
-         //new StringReplacePlugin(),
-      
-        new CleanWebpackPlugin(['build']),
-        
- 
+        PnpWebpackPlugin,
+      extractCSS,
+      extractBLCSS,
+      // wrapping editor style with .gutenberg__editor class
+      // new PostCssWrapper('./css/block-library/edit-blocks.css', '.gutenberg__editor'),
+      // new StringReplacePlugin(),
+      new CleanWebpackPlugin(['build']),
+      new HtmlWebpackPlugin({
+        inject: true,
+        entry: 'src/index.js',
+        filename: 'index.php',
+        template: paths.appHtml,
+        ...blockVars,
+      }),
+    new InterpolateHtmlPlugin(HtmlWebpackPlugin, {
+        PUBLIC_URL: publicUrl
+    }),
+    // This gives some necessary context to module not found errors, such as
+    // the requesting resource.
+    new ModuleNotFoundPlugin(paths.appPath),
+    // Makes some environment variables available to the JS code, for example:
+    // if (process.env.NODE_ENV === 'development') { ... }. See `./env.js`.
+    new webpack.DefinePlugin(env.stringified),
+    // This is necessary to emit hot updates (currently CSS only):
+    new webpack.HotModuleReplacementPlugin(),
+    // Watcher doesn't work well if you mistype casing in a path so we use
+    // a plugin that prints an error when you attempt to do this.
+    // See https://github.com/facebook/create-react-app/issues/240
+    new CaseSensitivePathsPlugin(),
+    // If you require a missing module and then `npm install` it, you still have
+    // to restart the development server for Webpack to discover it. This plugin
+    // makes the discovery automatic so you don't have to restart.
+    // See https://github.com/facebook/create-react-app/issues/186
+    new WatchMissingNodeModulesPlugin(paths.appNodeModules),
+    // Moment.js is an extremely popular library that bundles large locale files
+    // by default due to how Webpack interprets its code. This is a practical
+    // solution that requires the user to opt into importing specific locales.
+    // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
+    // You can remove this if you don't use Moment.js:
+    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    // Generate a manifest file which contains a mapping of all asset filenames
+    // to their corresponding output file so that tools can pick it up without
+    // having to parse `index.html`.
+    new ManifestPlugin({
+      fileName: 'asset-manifest.json',
+      publicPath: publicPath,
+    }),
+    new CopyWebpackPlugin( [
+			{ from: `${blockDir}node_modules/tinymce/plugins`, to: 'static/js/plugins' },
+			{ from: `${blockDir}node_modules/tinymce/themes`, to: 'static/js/themes' },
+			{ from: `${blockDir}node_modules/tinymce/skins`, to: 'static/js/skins' },
+		], {} ),
     ],
+    resolveLoader: {
+        plugins: [
+          PnpWebpackPlugin.moduleLoader(module),
+        ],
+      },
+      node: {
+        dgram: 'empty',
+        fs: 'empty',
+        net: 'empty',
+        tls: 'empty',
+        child_process: 'empty',
+      },
     stats: {
-        children: false,
+      children: false,
     },
 };
+  
