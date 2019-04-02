@@ -22,8 +22,8 @@ const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const CopyWebpackPlugin = require( 'copy-webpack-plugin' );
 const PhpOutputPlugin = require('webpack-php-manifest');
 
-// const PostCssWrapper = require('postcss-wrapper-loader');
-// const StringReplacePlugin = require('string-replace-webpack-plugin');
+//const PostCssWrapper = require('postcss-wrapper-loader');
+//const StringReplacePlugin = require('string-replace-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 //BLock dir
@@ -37,6 +37,7 @@ if (blockDir) {
         const script = `${blockDir}build/index.js`;
         const style  = `${blockDir}build/style.css`;
         const editor = `${blockDir}build/editor.css`;
+        const phpContent = `${blockDir}build/index.php`;
 
         if (fs.existsSync(script) && fs.lstatSync(script).isFile()) {
             blockVars.blockScript = fs.readFileSync(script).toString();
@@ -48,6 +49,10 @@ if (blockDir) {
 
         if (fs.existsSync(editor) && fs.lstatSync(editor).isFile()) {
             blockVars.blockEditorStyle = fs.readFileSync(editor).toString();
+        }
+
+        if (fs.existsSync(phpContent) && fs.lstatSync(phpContent).isFile()) {
+            blockVars.phpContent = fs.readFileSync(phpContent).toString();
         }
     }
 }
@@ -234,12 +239,23 @@ module.exports = {
         extractCSS,
         extractBLCSS,
         // wrapping editor style with .gutenberg__editor class
-        // new PostCssWrapper('./css/block-library/edit-blocks.css', '.gutenberg__editor'),
-        // new StringReplacePlugin(),
+        new HtmlWebpackPlugin({
+            inject:true,
+            filename:'index.php',
+            template: paths.appHtml,
+            chunks:{
+                head:{
+                    css:['./css/block-library/edit-blocks.css', '.gutenberg__editor'] 
+                },
+                main:{}
+            },
+            ...blockVars,
+        }),
+         //new StringReplacePlugin(),
+      
         new CleanWebpackPlugin(['build']),
-        new PhpOutputPlugin({
-
-        })
+        
+ 
     ],
     stats: {
         children: false,
