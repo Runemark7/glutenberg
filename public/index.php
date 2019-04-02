@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="theme-color" content="#000000">
+    
     <!--
       manifest.json provides metadata used when your web app is added to the
       homescreen on Android. See https://developers.google.com/web/fundamentals/web-app-manifest/
@@ -21,7 +22,7 @@
     <script src="https://unpkg.com/moment@2.22.1/min/moment.min.js"></script>
 
     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-
+    <script src="/src/main.js" type = "text/babel"></script>
     <style type="text/css">
         <%= htmlWebpackPlugin.options.blockStyle %>
     </style>
@@ -47,4 +48,5 @@
 <script>
     <%= htmlWebpackPlugin.options.blockScript %>
 </script>
+
 </html>

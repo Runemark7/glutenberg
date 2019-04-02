@@ -22,6 +22,7 @@ const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const CopyWebpackPlugin = require( 'copy-webpack-plugin' );
 const PhpOutputPlugin = require('webpack-php-manifest');
 
+process.traceDeprecation = true;
 //const PostCssWrapper = require('postcss-wrapper-loader');
 //const StringReplacePlugin = require('string-replace-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
