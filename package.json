@@ -33,10 +33,6 @@
     "@babel/preset-stage-1": "^7.0.0",
     "@babel/runtime": "^7.4.3",
     "@wordpress/a11y": "^2.0.2",
-<<<<<<< HEAD
-    "@wordpress/api-fetch": "^3.1.0",
-=======
->>>>>>> 4bb2affbe83f5bce433e3b7722bb9d3d3834b684
     "@wordpress/autop": "^2.0.2",
     "@wordpress/blob": "^2.1.0",
     "@wordpress/block-library": "^2.2.13",

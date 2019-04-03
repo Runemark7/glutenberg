@@ -1,5 +1,5 @@
 import React from 'react';
-import { data, editPost, domReady } from './../index.js';
+import { data, editPost, domReady } from './../index';
 import { types } from '../globals/fake-data';
 import { getPage } from '../globals/api-fetch';
 
