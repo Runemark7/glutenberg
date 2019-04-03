@@ -1,5 +1,6 @@
 import * as url from '@wordpress/url/build-module';
 
+console.log(url);
 if (window.wp.url) {
     const props = Object.keys(url);
 

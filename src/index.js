@@ -12,6 +12,7 @@ import * as i18n from '@wordpress/i18n';
 // wp.i18n.setLocaleData
 
 import * as url from '@wordpress/url';
+//import * as url from './init/url';
 
 import apiFetch from '@wordpress/api-fetch';
 import './scripts/api-fetch';
@@ -73,6 +74,10 @@ import * as formatLibrary from '@wordpress/format-library';
 // Other
 import * as a11y from '@wordpress/a11y';
 
+import regeneratorRuntime from "regenerator-runtime";
+
+//import babelPluginTransformRuntime from "babel-plugin-transform-runtime";
+
 // Style
 //import '../scss/block-library.scss';
 //import '../scss/style.scss';
@@ -115,6 +120,7 @@ window.wp = {
     url,
     viewport,
     wordcount,
+    regeneratorRuntime,
 };
 
 export {
@@ -154,6 +160,7 @@ export {
     url,
     viewport,
     wordcount,
+    regeneratorRuntime,
 };
 
 import './main';

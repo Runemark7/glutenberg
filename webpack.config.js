@@ -125,14 +125,14 @@ const externals = {
   
 const alias = {'react-native': 'react-native-web'};
 
-[
-    'api-fetch',
-    'url',
-  ].forEach(name => {
-    externals[ `@wordpress/${name}` ] = {
-      this: [ 'wp', camelCaseDash(name) ],
-    };
-  });
+// [
+//     'api-fetch',
+//     'url',
+//   ].forEach(name => {
+//     externals[ `@wordpress/${name}` ] = {
+//       this: [ 'wp', camelCaseDash(name) ],
+//     };
+//   });
 
 module.exports = {
     mode: 'production',
@@ -157,12 +157,12 @@ module.exports = {
           {
             test: /\.jpe?g|png$/,
             exclude: /node_modules/,
-            loader: ["url-loader", "file-loader"]
+            loader: ["url-loader", "file-loader", "babel-loader"]
           },
           {
             test: /\.(js|jsx)$/,
             exclude: /node_modules/,
-            loader: babelLoader
+            loader: babelLoader,
           }
       ]
     },
