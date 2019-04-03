@@ -76,6 +76,7 @@ const sassModuleRegex = /\.module\.(scss|sass)$/;
 const getStyleLoaders = (cssOptions, preProcessor) => {
     const loaders = [
       require.resolve('style-loader'),
+      
       {
         loader: require.resolve('css-loader'),
         options: Object.assign(
@@ -142,7 +143,7 @@ const externals = {
 };
   
 const alias = {};
-
+/*
 [
     'api-fetch',
     'url',
@@ -151,12 +152,12 @@ const alias = {};
       this: [ 'wp', camelCaseDash(name) ],
     };
   });
-
+*/
 module.exports = {
     mode: 'production',
     bail:true,
     devtool:  shouldUseSourceMap ? 'source-map' : false,
-    entry: ['babel-polyfill', paths.appIndexJs],
+    entry: [paths.appIndexJs],
     output: {
       path: paths.appBuild,
       filename: 'static/js/[name].[hash:8].js',
