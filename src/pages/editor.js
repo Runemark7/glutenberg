@@ -1,5 +1,5 @@
 import React from 'react';
-import { data, editPost, domReady } from './../index.js';
+import { data, editPost, domReady } from '../index.js';
 import { types } from '../globals/fake-data';
 import { getPage } from '../globals/api-fetch';
 
@@ -16,13 +16,13 @@ class Editor extends React.Component {
     type = type.slice(0, -1);
 
     this.state = {
-      postType: type || 'page',
+      postType: type || 'post',
     };
   }
 
   componentDidMount () {
     const { postType } = this.state;
-
+    console.log(postType);
     const settings = {
       alignWide: true,
       availableTemplates: [],

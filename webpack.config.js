@@ -141,32 +141,9 @@ const externals = {
     moment: 'moment',
     jquery: 'jQuery',
 };
-  
-<<<<<<< HEAD
+
 const alias = {'react-native': 'react-native-web'};
 
-// [
-//     'api-fetch',
-//     'url',
-//   ].forEach(name => {
-//     externals[ `@wordpress/${name}` ] = {
-//       this: [ 'wp', camelCaseDash(name) ],
-//     };
-//   });
-
-=======
-const alias = {};
-/*
-[
-    'api-fetch',
-    'url',
-  ].forEach(name => {
-    externals[ `@wordpress/${name}` ] = {
-      this: [ 'wp', camelCaseDash(name) ],
-    };
-  });
-*/
->>>>>>> 4bb2affbe83f5bce433e3b7722bb9d3d3834b684
 module.exports = {
     mode: 'production',
     bail:true,
@@ -230,26 +207,9 @@ module.exports = {
         new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson]),
       ],
     },
-    resolveLoader: {
-      plugins: [
-        PnpWebpackPlugin.moduleLoader(module),
-      ],
-    },
     externals,
     module: {
       rules:[
-<<<<<<< HEAD
-          {
-            test: /\.jpe?g|png$/,
-            exclude: /node_modules/,
-            loader: ["url-loader", "file-loader", "babel-loader"]
-          },
-          {
-            test: /\.(js|jsx)$/,
-            exclude: /node_modules/,
-            loader: babelLoader,
-          }
-=======
         { parser: { requireEnsure: false } },
         {
           test: /\.(js|mjs|jsx)$/,
@@ -363,7 +323,6 @@ module.exports = {
             }, 
           ]
         }
->>>>>>> 4bb2affbe83f5bce433e3b7722bb9d3d3834b684
       ]
     },
     plugins: [

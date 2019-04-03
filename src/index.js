@@ -179,5 +179,3 @@ export {
     wordcount,
     regeneratorRuntime,
 };
-
-import './main';
