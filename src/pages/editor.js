@@ -1,11 +1,11 @@
 import React from 'react';
-import { data, editPost, domReady } from './../index';
+import { data, editPost, domReady } from './../index.js';
 import { types } from '../globals/fake-data';
 import { getPage } from '../globals/api-fetch';
 
 // Gutenberg JS Style
-//import '@frontkom/gutenberg-js/build/css/block-library/style.css';
-//import '@frontkom/gutenberg-js/build/css/style.css';
+//import './../css/block-library/style.css';
+//import './../css/style.css'; 
 //import './editor.css';
 
 class Editor extends React.Component {
