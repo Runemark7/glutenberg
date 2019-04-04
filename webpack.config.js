@@ -141,18 +141,18 @@ const externals = {
     moment: 'moment',
     jquery: 'jQuery',
 };
-  
-const alias = {};
-/*
+
+const alias = {'react-native': 'react-native-web'};
+
 [
-    'api-fetch',
-    'url',
-  ].forEach(name => {
-    externals[ `@wordpress/${name}` ] = {
-      this: [ 'wp', camelCaseDash(name) ],
-    };
-  });
-*/
+  'api-fetch',
+  'url',
+].forEach(name => {
+  externals[ `@wordpress/${name}` ] = {
+    this: [ 'wp', camelCaseDash(name) ],
+  };
+});
+
 module.exports = {
     mode: 'production',
     bail:true,
@@ -166,6 +166,7 @@ module.exports = {
       path
         .relative(paths.appSrc, info.absoluteResourcePath)
         .replace(/\\/g, '/'),
+      libraryTarget:'this'
     },
     optimization: {
       minimizer: [
@@ -215,16 +216,58 @@ module.exports = {
         PnpWebpackPlugin,
         new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson]),
       ],
-    },
-    resolveLoader: {
-      plugins: [
-        PnpWebpackPlugin.moduleLoader(module),
-      ],
+      alias,
     },
     externals,
     module: {
       rules:[
         { parser: { requireEnsure: false } },
+        ////////////////
+        {
+          test: /\.js$/,
+          include: [
+            /src/,
+            /node_modules\/@wordpress/,
+          ],
+          use: babelLoader,
+        },
+        {
+        test: /\.js$/,
+        oneOf: [
+          {
+            resourceQuery: /\?source=node_modules/,
+            use: babelLoader,
+          },
+          {
+            loader: 'path-replace-loader',
+            options: {
+              path: resolve(__dirname, 'node_modules/@wordpress'),
+              replacePath: resolve(__dirname, 'src/js/gutenberg-overrides/@wordpress'),
+            },
+          },
+        ],
+      },
+      {
+        test: /style\.s?css$/,
+        use: extractCSS.extract({
+          fallback: 'style-loader', // creates style nodes from JS strings
+          use: [
+            { loader: 'css-loader' },   // translates CSS into CommonJS
+            { loader: 'sass-loader' },  // compiles Sass to CSS
+          ],
+        }),
+      },
+      {
+        test: /block-library\.s?css$/,
+        use: extractBLCSS.extract({
+          fallback: 'style-loader', // creates style nodes from JS strings
+          use: [
+            { loader: 'css-loader' },   // translates CSS into CommonJS
+            { loader: 'sass-loader' },  // compiles Sass to CSS
+          ],
+        }),
+      },
+      /////////////////
         {
           test: /\.(js|mjs|jsx)$/,
           enforce: 'pre',
@@ -420,6 +463,13 @@ module.exports = {
         plugins: [
           PnpWebpackPlugin.moduleLoader(module),
         ],
+      },
+      node: {
+        dgram: 'empty',
+        fs: 'empty',
+        net: 'empty',
+        tls: 'empty',
+        child_process: 'empty',
       },
     stats: {
       children: false,

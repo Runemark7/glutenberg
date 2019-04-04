@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
 import './globals';
-import Editor from './pages/editor';
+import Editor from './pages/editor.js';
 
 
 ReactDOM.render((
@@ -179,5 +179,3 @@ export {
     wordcount,
     regeneratorRuntime,
 };
-
-import './main';

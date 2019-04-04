@@ -1,7 +1,9 @@
 import React from 'react';
-import { data, editPost, domReady } from './../index';
+import { data, editPost, domReady } from '../';
 import { types } from '../globals/fake-data';
 import { getPage } from '../globals/api-fetch';
+
+
 
 // Gutenberg JS Style
 //import './../css/block-library/style.css';
@@ -16,13 +18,12 @@ class Editor extends React.Component {
     type = type.slice(0, -1);
 
     this.state = {
-      postType: type || 'page',
+      postType: type || 'post',
     };
   }
 
   componentDidMount () {
     const { postType } = this.state;
-
     const settings = {
       alignWide: true,
       availableTemplates: [],
@@ -50,6 +51,7 @@ class Editor extends React.Component {
       domReady(function () {
         resolve(editPost.initializeEditor('editor', postType, 1, settings, {}));
       });
+  
     });
   }
 
