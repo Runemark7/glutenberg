@@ -5,8 +5,8 @@ const { resolve } = require('path');
 
 // gutenberg-js
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const extractCSS = new ExtractTextPlugin('./css/style.css');
-const extractBLCSS = new ExtractTextPlugin('./css/block-library/style.css');
+const extractCSS = new ExtractTextPlugin('./src/css/style.css');
+const extractBLCSS = new ExtractTextPlugin('./src/css/block-library/style.css');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 
@@ -33,6 +33,8 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const safePostCssParser = require('postcss-safe-parser');
 const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 
 //const PostCssWrapper = require('postcss-wrapper-loader');
 //const StringReplacePlugin = require('string-replace-webpack-plugin');
@@ -76,9 +78,8 @@ const sassModuleRegex = /\.module\.(scss|sass)$/;
 const getStyleLoaders = (cssOptions, preProcessor) => {
     const loaders = [
       require.resolve('style-loader'),
-      
       {
-        loader: require.resolve('css-loader'),
+        loader: MiniCssExtractPlugin.loader,
         options: Object.assign(
           {},
           shouldUseRelativeAssetPaths ? { publicPath: '../../' } : undefined
@@ -90,7 +91,7 @@ const getStyleLoaders = (cssOptions, preProcessor) => {
       },
       {
         // Options for PostCSS as we reference these options twice
-        // Adds vendor prefixing based on your specified browser support in
+        // Adds vendor prefixing based on your specified browser support inv
         // package.json
         loader: require.resolve('postcss-loader'),
         options: {
@@ -161,6 +162,7 @@ module.exports = {
     output: {
       path: paths.appBuild,
       filename: 'static/js/[name].[hash:8].js',
+      chunkFilename: 'static/js/[name].[hash:8].chunk.js',
       publicPath: publicPath,
       devtoolModuleFilenameTemplate: info =>
       path
@@ -216,7 +218,14 @@ module.exports = {
         PnpWebpackPlugin,
         new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson]),
       ],
-      alias,
+      alias: {
+        'react-native': 'react-native-web',
+      },
+    },
+    resolveLoader: {
+      plugins: [
+        PnpWebpackPlugin.moduleLoader(module),
+      ],
     },
     externals,
     module: {
@@ -224,67 +233,74 @@ module.exports = {
         { parser: { requireEnsure: false } },
         ////////////////
         {
-          test: /\.js$/,
-          include: [
-            /src/,
-            /node_modules\/@wordpress/,
-          ],
-          use: babelLoader,
-        },
-        {
-        test: /\.js$/,
-        oneOf: [
-          {
-            resourceQuery: /\?source=node_modules/,
-            use: babelLoader,
-          },
-          {
-            loader: 'path-replace-loader',
-            options: {
-              path: resolve(__dirname, 'node_modules/@wordpress'),
-              replacePath: resolve(__dirname, 'src/js/gutenberg-overrides/@wordpress'),
-            },
-          },
-        ],
-      },
-      {
-        test: /style\.s?css$/,
-        use: extractCSS.extract({
-          fallback: 'style-loader', // creates style nodes from JS strings
-          use: [
-            { loader: 'css-loader' },   // translates CSS into CommonJS
-            { loader: 'sass-loader' },  // compiles Sass to CSS
-          ],
-        }),
-      },
-      {
-        test: /block-library\.s?css$/,
-        use: extractBLCSS.extract({
-          fallback: 'style-loader', // creates style nodes from JS strings
-          use: [
-            { loader: 'css-loader' },   // translates CSS into CommonJS
-            { loader: 'sass-loader' },  // compiles Sass to CSS
-          ],
-        }),
-      },
-      /////////////////
-        {
-          test: /\.(js|mjs|jsx)$/,
-          enforce: 'pre',
-          use: [
-            {
-              options: {
-                formatter: require.resolve('react-dev-utils/eslintFormatter'),
-                eslintPath: require.resolve('eslint'),
-  
-              },
-              loader: require.resolve('eslint-loader'),
-            },
-          ],
-          include: paths.appSrc,
+          test: /\.css$/,
+          use: extractCSS.extract([
+              'css-loader',
+              'postcss-loader'
+          ])
         },
         {
           oneOf: [
+            {
+              test: /\.js$/,
+              include: [
+                /src/,
+                /node_modules\/@wordpress/,
+              ],
+              use: babelLoader,
+            },
+            {
+            test: /\.js$/,
+            oneOf: [
+              {
+                resourceQuery: /\?source=node_modules/,
+                use: babelLoader,
+              },
+              {
+                loader: 'path-replace-loader',
+                options: {
+                  path: resolve(__dirname, 'node_modules/@wordpress'),
+                  replacePath: resolve(__dirname, 'src/gutenberg-overrides/@wordpress'),
+                },
+              },
+            ],
+          },
+          {
+            test: /style\.s?css$/,
+            use: extractCSS.extract({
+              fallback: 'style-loader', // creates style nodes from JS strings
+              use: [
+                { loader: 'css-loader' },   // translates CSS into CommonJS
+                { loader: 'sass-loader' },  // compiles Sass to CSS
+              ],
+            }),
+          },
+          {
+            test: /block-library\.s?css$/,
+            use: extractBLCSS.extract({
+              fallback: 'style-loader', // creates style nodes from JS strings
+              use: [
+                { loader: 'css-loader' },   // translates CSS into CommonJS
+                { loader: 'sass-loader' },  // compiles Sass to CSS
+              ],
+            }),
+          },
+          /////////////////
+            {
+              test: /\.(js|mjs|jsx)$/,
+              enforce: 'pre',
+              use: [
+                {
+                  options: {
+                    formatter: require.resolve('react-dev-utils/eslintFormatter'),
+                    eslintPath: require.resolve('eslint'),
+      
+                  },
+                  loader: require.resolve('eslint-loader'),
+                },
+              ],
+              include: paths.appSrc,
+            },
             {
               test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
               loader: require.resolve('url-loader'),
@@ -340,14 +356,19 @@ module.exports = {
             {
               test: cssRegex,
               exclude: cssModuleRegex,
-              use: getStyleLoaders({
+              loader: getStyleLoaders({
                 importLoaders: 1,
                 sourceMap: shouldUseSourceMap,
               }),
+              // Don't consider CSS imports dead code even if the
+              // containing package claims to have no side effects.
+              // Remove this when webpack adds a warning or an error for this.
+              // See https://github.com/webpack/webpack/issues/6571
+              sideEffects: true,
             },
             {
               test: cssModuleRegex,
-              use: getStyleLoaders({
+              loader: getStyleLoaders({
                 importLoaders: 1,
                 sourceMap: shouldUseSourceMap,
                 modules: true,
@@ -357,11 +378,22 @@ module.exports = {
             {
               test: sassRegex,
               exclude: sassModuleRegex,
-              use: getStyleLoaders({ importLoaders: 2, sourceMap: shouldUseSourceMap, }, 'sass-loader'),
+              loader: getStyleLoaders(
+                {
+                  importLoaders: 2,
+                  sourceMap: shouldUseSourceMap,
+                },
+                'sass-loader'
+              ),
+              // Don't consider CSS imports dead code even if the
+              // containing package claims to have no side effects.
+              // Remove this when webpack adds a warning or an error for this.
+              // See https://github.com/webpack/webpack/issues/6571
+              sideEffects: true,
             },
             {
               test: sassModuleRegex,
-              use: getStyleLoaders(
+              loader: getStyleLoaders(
                 {
                   importLoaders: 2,
                   sourceMap: shouldUseSourceMap,
@@ -372,8 +404,8 @@ module.exports = {
               ),
             },
             {
-              exclude: [/\.(js|mjs|jsx)$/, /\.html$/, /\.json$/],
               loader: require.resolve('file-loader'),
+              exclude: [/\.(js|mjs|jsx)$/, /\.html$/, /\.json$/],
               options: {
                 name: 'static/media/[name].[hash:8].[ext]',
               },
@@ -383,9 +415,9 @@ module.exports = {
       ]
     },
     plugins: [
-      PnpWebpackPlugin,
       extractCSS,
       extractBLCSS,
+      PnpWebpackPlugin,
 
       new CleanWebpackPlugin(['build']),
       new HtmlWebpackPlugin({
@@ -410,28 +442,15 @@ module.exports = {
     new InterpolateHtmlPlugin(HtmlWebpackPlugin, {
         PUBLIC_URL: publicUrl
     }),
-    // This gives some necessary context to module not found errors, such as
-    // the requesting resource.
     new ModuleNotFoundPlugin(paths.appPath),
-    // Makes some environment variables available to the JS code, for example:
-    // if (process.env.NODE_ENV === 'development') { ... }. See `./env.js`.
     new webpack.DefinePlugin(env.stringified),
-    // This is necessary to emit hot updates (currently CSS only):
+    new MiniCssExtractPlugin({
+      filename: 'static/css/[name].[hash:8].css',
+      chunkFilename: 'static/css/[name].[hash:8].chunk.css',
+    }),
     new webpack.HotModuleReplacementPlugin(),
-    // Watcher doesn't work well if you mistype casing in a path so we use
-    // a plugin that prints an error when you attempt to do this.
-    // See https://github.com/facebook/create-react-app/issues/240
     new CaseSensitivePathsPlugin(),
-    // If you require a missing module and then `npm install` it, you still have
-    // to restart the development server for Webpack to discover it. This plugin
-    // makes the discovery automatic so you don't have to restart.
-    // See https://github.com/facebook/create-react-app/issues/186
     new WatchMissingNodeModulesPlugin(paths.appNodeModules),
-    // Moment.js is an extremely popular library that bundles large locale files
-    // by default due to how Webpack interprets its code. This is a practical
-    // solution that requires the user to opt into importing specific locales.
-    // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
-    // You can remove this if you don't use Moment.js:
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new WorkboxWebpackPlugin.GenerateSW({
       clientsClaim: true,
@@ -439,16 +458,10 @@ module.exports = {
       importWorkboxFrom: 'cdn',
       navigateFallback: publicUrl + '/index.php',
       navigateFallbackBlacklist: [
-        // Exclude URLs starting with /_, as they're likely an API call
         new RegExp('^/_'),
-        // Exclude URLs containing a dot, as they're likely a resource in
-        // public/ and not a SPA route
         new RegExp('/[^/]+\\.[^/]+$'),
       ],
     }),
-    // Generate a manifest file which contains a mapping of all asset filenames
-    // to their corresponding output file so that tools can pick it up without
-    // having to parse `index.html`.
     new ManifestPlugin({
       fileName: 'asset-manifest.json',
       publicPath: publicPath,
@@ -459,11 +472,6 @@ module.exports = {
 			{ from: `${blockDir}node_modules/tinymce/skins`, to: 'static/js/skins' },
 		], {} ),
     ],
-    resolveLoader: {
-        plugins: [
-          PnpWebpackPlugin.moduleLoader(module),
-        ],
-      },
       node: {
         dgram: 'empty',
         fs: 'empty',
