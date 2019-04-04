@@ -5,8 +5,8 @@ const { resolve } = require('path');
 
 // gutenberg-js
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const extractCSS = new ExtractTextPlugin('./src/css/style.css');
-const extractBLCSS = new ExtractTextPlugin('./src/css/block-library/style.css');
+const extractCSS = new ExtractTextPlugin('./src/scss/_media-library.scss');
+const extractBLCSS = new ExtractTextPlugin('./src/scss/style.scss');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 
@@ -157,7 +157,7 @@ const alias = {'react-native': 'react-native-web'};
 module.exports = {
     mode: 'production',
     bail:true,
-    devtool:  shouldUseSourceMap ? 'source-map' : false,
+    devtool:  'source-map',
     entry: [paths.appIndexJs],
     output: {
       path: paths.appBuild,
@@ -231,16 +231,22 @@ module.exports = {
     module: {
       rules:[
         { parser: { requireEnsure: false } },
-        ////////////////
-        {
-          test: /\.css$/,
-          use: extractCSS.extract([
-              'css-loader',
-              'postcss-loader'
-          ])
-        },
         {
           oneOf: [
+            {
+              test: /\.css$/,
+              use: ExtractTextPlugin.extract({
+                fallback: "style-loader",
+                use: "css-loader"
+              })
+            },
+            {
+              test: /\.scss$/,
+              use: ExtractTextPlugin.extract({
+                fallback: 'style-loader',
+                use: ['css-loader', 'sass-loader']
+              })
+            },
             {
               test: /\.js$/,
               include: [
@@ -309,7 +315,7 @@ module.exports = {
                 name: 'static/media/[name].[hash:8].[ext]',
               },
             },
-            {
+            {   
               test: /\.(js|mjs|jsx)$/,
               include: paths.appSrc,
               loader: require.resolve('babel-loader'),
@@ -360,10 +366,6 @@ module.exports = {
                 importLoaders: 1,
                 sourceMap: shouldUseSourceMap,
               }),
-              // Don't consider CSS imports dead code even if the
-              // containing package claims to have no side effects.
-              // Remove this when webpack adds a warning or an error for this.
-              // See https://github.com/webpack/webpack/issues/6571
               sideEffects: true,
             },
             {
@@ -385,10 +387,6 @@ module.exports = {
                 },
                 'sass-loader'
               ),
-              // Don't consider CSS imports dead code even if the
-              // containing package claims to have no side effects.
-              // Remove this when webpack adds a warning or an error for this.
-              // See https://github.com/webpack/webpack/issues/6571
               sideEffects: true,
             },
             {
@@ -419,7 +417,6 @@ module.exports = {
       extractBLCSS,
       PnpWebpackPlugin,
 
-      new CleanWebpackPlugin(['build']),
       new HtmlWebpackPlugin({
         inject: true,
         filename: 'index.php',
