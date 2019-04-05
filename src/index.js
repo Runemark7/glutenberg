@@ -16,10 +16,10 @@ ReactDOM.render((
   </BrowserRouter>
 ),document.getElementById('root'));
 
+
 /**
  * Internal dependencies
  */
-
 import './init';
 /**
  * WordPress dependencies
@@ -100,7 +100,7 @@ import regeneratorRuntime from "regenerator-runtime";
 //import '../scss/style.scss';
 
 // Set global wp
-window.wp = {
+window.wp = { 
     a11y,
     apiFetch,
     autop,

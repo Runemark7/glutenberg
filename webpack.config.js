@@ -5,8 +5,8 @@ const { resolve } = require('path');
 
 // gutenberg-js
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const extractCSS = new ExtractTextPlugin('./src/scss/_media-library.scss');
-const extractBLCSS = new ExtractTextPlugin('./src/scss/style.scss');
+const extractCSS = new ExtractTextPlugin('./static/css/style.css');
+const extractBLCSS = new ExtractTextPlugin('./static/css/block-library/style.css');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 
@@ -43,6 +43,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const blockDir = process.env.BLOCK_DIR ? process.env.BLOCK_DIR + '/' : '';
 const blockVars = {};
 
+
+
 if (blockDir) {
     const fs = require('fs');
     if (fs.lstatSync(blockDir).isDirectory()) {
@@ -70,58 +72,6 @@ const shouldInlineRuntimeChunk = process.env.INLINE_RUNTIME_CHUNK !== 'false';
 const publicUrl = publicPath.slice(0, -1);
 const env = getClientEnvironment(publicUrl);
 
-const cssRegex = /\.css$/;
-const cssModuleRegex = /\.module\.css$/;
-const sassRegex = /\.(scss|sass)$/;
-const sassModuleRegex = /\.module\.(scss|sass)$/;
-
-const getStyleLoaders = (cssOptions, preProcessor) => {
-    const loaders = [
-      require.resolve('style-loader'),
-      {
-        loader: MiniCssExtractPlugin.loader,
-        options: Object.assign(
-          {},
-          shouldUseRelativeAssetPaths ? { publicPath: '../../' } : undefined
-        ),
-      },
-      {
-        loader: require.resolve('css-loader'),
-        options: cssOptions,
-      },
-      {
-        // Options for PostCSS as we reference these options twice
-        // Adds vendor prefixing based on your specified browser support inv
-        // package.json
-        loader: require.resolve('postcss-loader'),
-        options: {
-          // Necessary for external CSS imports to work
-          // https://github.com/facebook/create-react-app/issues/2677
-          ident: 'postcss',
-          plugins: () => [
-            require('postcss-flexbugs-fixes'),
-            require('postcss-preset-env')({
-              autoprefixer: {
-                flexbox: 'no-2009',
-              },
-              stage: 3,
-            }),
-          ],
-          sourceMap: shouldUseSourceMap,
-        },
-      },
-    ];
-    if (preProcessor) {
-      loaders.push({
-        loader: require.resolve(preProcessor),
-        options: {
-          sourceMap: shouldUseSourceMap,
-        },
-      });
-    }
-    return loaders;
-  };
-
 function camelCaseDash (string) {
     return string.replace(
       /-([a-z])/g,
@@ -143,7 +93,6 @@ const externals = {
     jquery: 'jQuery',
 };
 
-const alias = {'react-native': 'react-native-web'};
 
 [
   'api-fetch',
@@ -158,7 +107,7 @@ module.exports = {
     mode: 'production',
     bail:true,
     devtool:  'source-map',
-    entry: [paths.appIndexJs],
+    entry: {app: paths.appIndexJs, style:paths.appIndexScss, block: paths.appBlockScss},
     output: {
       path: paths.appBuild,
       filename: 'static/js/[name].[hash:8].js',
@@ -172,36 +121,7 @@ module.exports = {
     },
     optimization: {
       minimizer: [
-        new TerserPlugin({
-          terserOptions: {
-            parse: {
-              ecma: 8,
-            },
-            compress: false,
-            mangle: {
-              safari10: true,
-            },
-            output: {
-              ecma: 5,
-              comments: false,
-              ascii_only: true,
-            },
-          },
-          parallel: true,
-          cache: true,
-          sourceMap: shouldUseSourceMap,
-        }),
-        new OptimizeCSSAssetsPlugin({
-          cssProcessorOptions: {
-            parser: safePostCssParser,
-            map: shouldUseSourceMap
-              ? {
-                  inline: false,
-                  annotation: true,
-                }
-              : false,
-          },
-        }),
+    
       ],
       splitChunks: {
         chunks: 'all',
@@ -232,21 +152,14 @@ module.exports = {
       rules:[
         { parser: { requireEnsure: false } },
         {
+          loader: require.resolve('file-loader'),
+          exclude: [/\.(js|mjs|jsx)$/, /\.html$/, /\.json$/, /\.scss$/, /\.css$/], 
+          options: {
+            name: 'static/media/[name].[hash:8].[ext]',
+          },
+        },
+        {
           oneOf: [
-            {
-              test: /\.css$/,
-              use: ExtractTextPlugin.extract({
-                fallback: "style-loader",
-                use: "css-loader"
-              })
-            },
-            {
-              test: /\.scss$/,
-              use: ExtractTextPlugin.extract({
-                fallback: 'style-loader',
-                use: ['css-loader', 'sass-loader']
-              })
-            },
             {
               test: /\.js$/,
               include: [
@@ -267,7 +180,7 @@ module.exports = {
                 options: {
                   path: resolve(__dirname, 'node_modules/@wordpress'),
                   replacePath: resolve(__dirname, 'src/gutenberg-overrides/@wordpress'),
-                },
+                }, 
               },
             ],
           },
@@ -291,123 +204,6 @@ module.exports = {
               ],
             }),
           },
-          /////////////////
-            {
-              test: /\.(js|mjs|jsx)$/,
-              enforce: 'pre',
-              use: [
-                {
-                  options: {
-                    formatter: require.resolve('react-dev-utils/eslintFormatter'),
-                    eslintPath: require.resolve('eslint'),
-      
-                  },
-                  loader: require.resolve('eslint-loader'),
-                },
-              ],
-              include: paths.appSrc,
-            },
-            {
-              test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
-              loader: require.resolve('url-loader'),
-              options: {
-                limit: 10000,
-                name: 'static/media/[name].[hash:8].[ext]',
-              },
-            },
-            {   
-              test: /\.(js|mjs|jsx)$/,
-              include: paths.appSrc,
-              loader: require.resolve('babel-loader'),
-              options: {
-                customize: require.resolve(
-                  'babel-preset-react-app/webpack-overrides'
-                ),
-
-                plugins: [
-                  [
-                    require.resolve('babel-plugin-named-asset-import'),
-                    {
-                      loaderMap: {
-                        svg: {
-                          ReactComponent: '@svgr/webpack?-prettier,-svgo![path]',
-                        },
-                      },
-                    },
-                  ],
-                ],
-                cacheDirectory: true,
-                cacheCompression: false,
-              },
-            },
-            {
-              test: /\.(js|mjs)$/,
-              exclude: /@babel(?:\/|\\{1,2})runtime/,
-              loader: require.resolve('babel-loader'),
-              options: {
-                babelrc: false,
-                configFile: false,
-                compact: false,
-                presets: [
-                  [
-                    require.resolve('babel-preset-react-app/dependencies'),
-                    { helpers: true },
-                  ],
-                ],
-                cacheDirectory: true,
-                cacheCompression: false,
-                sourceMaps: false,
-              },
-            },
-            {
-              test: cssRegex,
-              exclude: cssModuleRegex,
-              loader: getStyleLoaders({
-                importLoaders: 1,
-                sourceMap: shouldUseSourceMap,
-              }),
-              sideEffects: true,
-            },
-            {
-              test: cssModuleRegex,
-              loader: getStyleLoaders({
-                importLoaders: 1,
-                sourceMap: shouldUseSourceMap,
-                modules: true,
-                getLocalIdent: getCSSModuleLocalIdent,
-              }),
-            },
-            {
-              test: sassRegex,
-              exclude: sassModuleRegex,
-              loader: getStyleLoaders(
-                {
-                  importLoaders: 2,
-                  sourceMap: shouldUseSourceMap,
-                },
-                'sass-loader'
-              ),
-              sideEffects: true,
-            },
-            {
-              test: sassModuleRegex,
-              loader: getStyleLoaders(
-                {
-                  importLoaders: 2,
-                  sourceMap: shouldUseSourceMap,
-                  modules: true,
-                  getLocalIdent: getCSSModuleLocalIdent,
-                },
-                'sass-loader'
-              ),
-            },
-            {
-              loader: require.resolve('file-loader'),
-              exclude: [/\.(js|mjs|jsx)$/, /\.html$/, /\.json$/],
-              options: {
-                name: 'static/media/[name].[hash:8].[ext]',
-              },
-            }, 
           ]
         }
       ]
@@ -415,8 +211,7 @@ module.exports = {
     plugins: [
       extractCSS,
       extractBLCSS,
-      PnpWebpackPlugin,
-
+      new CleanWebpackPlugin(['build']),
       new HtmlWebpackPlugin({
         inject: true,
         filename: 'index.php',
@@ -435,47 +230,16 @@ module.exports = {
           minifyURLs: true,
         },
       }),
-      shouldInlineRuntimeChunk && new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime~.+[.]js/]),
     new InterpolateHtmlPlugin(HtmlWebpackPlugin, {
         PUBLIC_URL: publicUrl
     }),
-    new ModuleNotFoundPlugin(paths.appPath),
     new webpack.DefinePlugin(env.stringified),
-    new MiniCssExtractPlugin({
-      filename: 'static/css/[name].[hash:8].css',
-      chunkFilename: 'static/css/[name].[hash:8].chunk.css',
-    }),
-    new webpack.HotModuleReplacementPlugin(),
-    new CaseSensitivePathsPlugin(),
-    new WatchMissingNodeModulesPlugin(paths.appNodeModules),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-    new WorkboxWebpackPlugin.GenerateSW({
-      clientsClaim: true,
-      exclude: [/\.map$/, /asset-manifest\.json$/],
-      importWorkboxFrom: 'cdn',
-      navigateFallback: publicUrl + '/index.php',
-      navigateFallbackBlacklist: [
-        new RegExp('^/_'),
-        new RegExp('/[^/]+\\.[^/]+$'),
-      ],
-    }),
     new ManifestPlugin({
       fileName: 'asset-manifest.json',
       publicPath: publicPath,
     }),
-    new CopyWebpackPlugin( [
-			{ from: `${blockDir}node_modules/tinymce/plugins`, to: 'static/js/plugins' },
-			{ from: `${blockDir}node_modules/tinymce/themes`, to: 'static/js/themes' },
-			{ from: `${blockDir}node_modules/tinymce/skins`, to: 'static/js/skins' },
-		], {} ),
     ],
-      node: {
-        dgram: 'empty',
-        fs: 'empty',
-        net: 'empty',
-        tls: 'empty',
-        child_process: 'empty',
-      },
     stats: {
       children: false,
     },

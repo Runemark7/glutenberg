@@ -1,9 +1,7 @@
 import React from 'react';
-import { data, editPost, domReady } from '../';
+import { data, editPost, domReady } from './../index.js';
 import { types } from '../globals/fake-data';
 import { getPage } from '../globals/api-fetch';
-
-
 
 // Gutenberg JS Style
 //import './../css/block-library/style.css';
