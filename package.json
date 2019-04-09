@@ -4,7 +4,7 @@
   "description": "E-commerce site built with nodejs as backend, vue frontend and mongodb ",
   "main": "index.js",
   "scripts": {
-    "start": "node server/index.js",
+    "start": "nodemon server/index.js",
     "dev": "nodemon server/index.js"
   },
   "author": "Rune",
